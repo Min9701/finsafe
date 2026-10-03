@@ -51,3 +51,12 @@ jobs:
 
       - name: Build Docker image
         run: docker build -t finsafe-app:ci .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'finsafe-app:ci'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
