@@ -48,3 +48,6 @@ jobs:
 
       - name: Run PHPUnit
         run: php artisan test
+
+      - name: Build Docker image
+        run: docker build -t finsafe-app:ci .
