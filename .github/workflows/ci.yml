@@ -41,5 +41,10 @@ jobs:
       - name: Run Composer Audit
         run: composer audit
 
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Run PHPUnit
         run: php artisan test
