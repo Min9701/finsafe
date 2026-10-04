@@ -43,6 +43,18 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
       - name: Prepare Laravel environment
         run: |
           cp .env.example .env
@@ -98,20 +110,6 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Debug Laravel view environment
-        run: |
-          echo "=== Laravel view configuration ==="
-          php artisan config:show view
-
-          echo "=== storage/framework ==="
-          ls -la storage/framework
-
-          echo "=== storage/framework/views ==="
-          ls -la storage/framework/views
-
-          echo "=== resources/views ==="
-          ls -la resources/views
 
       - name: Run PHPUnit
         run: php artisan test
