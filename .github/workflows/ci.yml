@@ -99,6 +99,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug Laravel view environment
+        run: |
+          echo "=== Laravel view configuration ==="
+          php artisan config:show view
+
+          echo "=== storage/framework ==="
+          ls -la storage/framework
+
+          echo "=== storage/framework/views ==="
+          ls -la storage/framework/views
+
+          echo "=== resources/views ==="
+          ls -la resources/views
+
       - name: Run PHPUnit
         run: php artisan test
 
