@@ -13,6 +13,22 @@ jobs:
   laravel-ci:
     runs-on: ubuntu-latest
 
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: finsafe
+          MYSQL_USER: finsafe
+          MYSQL_PASSWORD: finsafe_password
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,6 +48,13 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
+          sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+          sed -i 's/^DB_HOST=.*/DB_HOST=127.0.0.1/' .env
+          sed -i 's/^DB_PORT=.*/DB_PORT=3306/' .env
+          sed -i 's/^DB_DATABASE=.*/DB_DATABASE=finsafe/' .env
+          sed -i 's/^DB_USERNAME=.*/DB_USERNAME=finsafe/' .env
+          sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=finsafe_password/' .env
+
       - name: Prepare Laravel directories
         run: |
           mkdir -p storage/framework/cache
@@ -41,15 +64,15 @@ jobs:
           mkdir -p storage/framework/views
           mkdir -p bootstrap/cache
 
-      - name: Clear Laravel caches
-        run: php artisan optimize:clear
+      - name: Run database migrations
+        run: php artisan migrate --force
 
       - name: Run Laravel Pint
         run: vendor/bin/pint --test
 
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse --memory-limit=1G
-      
+
       - name: Run Composer Audit
         run: composer audit
 
