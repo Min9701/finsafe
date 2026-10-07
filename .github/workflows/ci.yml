@@ -1,0 +1,127 @@
+name: Laravel CI
+
+on:
+  push:
+    branches:
+      - main
+      - sql-injection
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  laravel-ci:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: finsafe
+          MYSQL_USER: finsafe
+          MYSQL_PASSWORD: finsafe_password
+          MYSQL_ROOT_PASSWORD: root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -proot_password"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: mbstring, pdo_mysql, bcmath, gd, zip
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build frontend assets
+        run: npm run build
+
+      - name: Prepare Laravel environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+          sed -i '/^DB_CONNECTION=/d' .env
+          sed -i '/^DB_HOST=/d' .env
+          sed -i '/^DB_PORT=/d' .env
+          sed -i '/^DB_DATABASE=/d' .env
+          sed -i '/^DB_USERNAME=/d' .env
+          sed -i '/^DB_PASSWORD=/d' .env
+
+          cat >> .env <<'EOF'
+          DB_CONNECTION=mysql
+          DB_HOST=127.0.0.1
+          DB_PORT=3306
+          DB_DATABASE=finsafe
+          DB_USERNAME=finsafe
+          DB_PASSWORD=finsafe_password
+          EOF
+
+      - name: Check database configuration
+        run: |
+          grep '^DB_CONNECTION=' .env
+          grep '^DB_HOST=' .env
+          grep '^DB_PORT=' .env
+          grep '^DB_DATABASE=' .env
+          grep '^DB_USERNAME=' .env
+          echo "DB_PASSWORD is configured: $(grep -q '^DB_PASSWORD=.' .env && echo yes || echo no)"
+
+      - name: Prepare Laravel directories
+        run: |
+          mkdir -p storage/framework/cache
+          mkdir -p storage/framework/data
+          mkdir -p storage/framework/sessions
+          mkdir -p storage/framework/testing
+          mkdir -p storage/framework/views
+          mkdir -p bootstrap/cache
+
+      - name: Run database migrations
+        run: php artisan migrate --force
+
+      - name: Run Laravel Pint
+        run: vendor/bin/pint --test
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse --memory-limit=1G
+
+      - name: Run Composer Audit
+        run: composer audit
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run PHPUnit
+        run: php artisan test
+
+      - name: Build Docker image
+        run: docker build -t finsafe-app:ci .
+
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'finsafe-app:ci'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          severity: 'CRITICAL,HIGH'
