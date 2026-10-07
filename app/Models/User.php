@@ -66,4 +66,14 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(AuditLog::class);
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'ADMIN';
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === 'ACTIVE';
+    }
 }

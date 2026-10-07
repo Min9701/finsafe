@@ -39,3 +39,4 @@ docker-compose.override.yml
 !/storage/framework/views/.gitignore
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
+/.agents/*

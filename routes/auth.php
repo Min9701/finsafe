@@ -24,10 +24,6 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth', 'role:ADMIN'])->group(function () {
         Route::post('/logout', [AdminAuthenticatedSessionController::class, 'destroy'])
             ->name('admin.logout');
-
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
     });
 });
 
