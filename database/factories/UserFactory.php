@@ -31,17 +31,24 @@ class UserFactory extends Factory
             'password' => static::$password ??= Hash::make('password'),
             'role' => 'USER',
             'status' => 'ACTIVE',
+            'totp_verified_at' => now(),
             'remember_token' => Str::random(10),
         ];
     }
 
     /**
-     * Indicate that the model's email address should be unverified.
+     * Keep the legacy factory state name available for existing tests.
      */
     public function unverified(): static
     {
+        return $this->unverifiedTotp();
+    }
+
+    public function unverifiedTotp(): static
+    {
         return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
+            'totp_secret' => null,
+            'totp_verified_at' => null,
         ]);
     }
 }

@@ -57,6 +57,15 @@
                     >
                         Giao dịch
                     </a>
+                    <a
+                        href="{{ route('budgets.index') }}"
+                        class="{{ request()->routeIs('budgets.*')
+                            ? 'bg-stone-300 text-slate-900'
+                            : 'text-stone-500 hover:bg-stone-50 hover:text-slate-800' }}
+                            shrink-0 rounded-lg px-3 py-2 text-sm font-semibold transition"
+                    >
+                        Ngân sách
+                    </a>
                 @endif
             </nav>
         </div>
@@ -77,8 +86,11 @@
                     <button
                         class="flex items-center gap-2 rounded-lg p-1.5 text-left transition focus:outline-none"
                     >
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-200 text-xs font-bold text-slate-700">
+                        <span class="flex items-center justify-center text-xs font-bold text-slate-700">
                             {{ Auth::user()->name }}
+                        </span>
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-200 text-xs font-bold text-slate-700">
+                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
                         </span>
                     </button>
                 </x-slot>

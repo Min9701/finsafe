@@ -40,3 +40,5 @@ docker-compose.override.yml
 /bootstrap/cache/*
 !/bootstrap/cache/.gitignore
 /.agents/*
+/.claude/*
+/.github/*

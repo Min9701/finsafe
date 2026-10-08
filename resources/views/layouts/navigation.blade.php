@@ -22,6 +22,9 @@
                         <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
                             Giao dịch
                         </x-nav-link>
+                        <x-nav-link :href="route('budgets.index')" :active="request()->routeIs('budgets.*')">
+                            Ngân sách
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -67,6 +70,7 @@
             @else
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">Dashboard</x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">Giao dịch</x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('budgets.index')" :active="request()->routeIs('budgets.*')">Ngân sách</x-responsive-nav-link>
             @endif
         </div>
         <div class="pt-4 pb-1 border-t border-gray-200">
