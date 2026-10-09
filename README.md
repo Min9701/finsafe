@@ -48,7 +48,23 @@ cd finsafe
 make init
 ```
 
-`make init` sẽ tạo `.env` từ `.env.example` nếu chưa có, build image PHP, khởi động toàn bộ services, tạo `APP_KEY` nếu thiếu và chạy migrations. Mở app tại [http://localhost:8080](http://localhost:8080).
+## Cài đặt phần mềm
+- Tải Docker desktop và wsl 
+- Docker thì tải trên mạng
+- WSL thì mở powershell, chạy bằng admin với lệnh `wsl --install`
+- Sau khi cài đặt thành công, mở Docker ra và cài đặt như sau
+- Setting -> Resource -> WSL Intergration -> Bật Enable integration with my default WSL distro và Ubuntu => restart
+
+## Clone code và chạy lệnh để chạy dự án
+
+```bash
+git clone https://github.com/Min9701/finsafe.git
+cd finsafe
+sudo apt install -y make
+make init
+```
+
+`make init` tự tạo `.env`, build và khởi động toàn bộ services, tạo các thư mục runtime Laravel, phân quyền thư mục, cài PHP dependencies, tạo `APP_KEY`, chạy migrations, tạo storage link và xóa cache. Không cần chạy thêm `make up`, `make composer install` hoặc lệnh `chown` thủ công. Mở app tại [http://localhost:8080](http://localhost:8080).
 
 Vite dev server đã chạy cùng stack để HMR tại [http://localhost:5175](http://localhost:5175). Request trực tiếp `/` trên port Vite có thể trả `404`; đây là bình thường vì Vite không có route root.
 
