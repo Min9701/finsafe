@@ -1,8 +1,8 @@
 *.log
 .DS_Store
 .env
-.env.backup
-.env.production
+.env.*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 /.codex
@@ -26,6 +26,9 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 docker-compose.override.yml
+docker-compose.override.yaml
+compose.override.yml
+compose.override.yaml
 /storage/framework/
 /storage/framework/*
 !/storage/framework/.gitignore
