@@ -51,6 +51,9 @@ make artisan db:seed
 
 
 ## 6 Truy cập dịch vụ
+Tài khoản đăng nhập phpMyAdmin
+username: finsafe
+password: finsafe_password
 
 | Dịch vụ | URL/kết nối | Ghi chú |
 | --- | --- | --- |
@@ -106,68 +109,3 @@ HOST_UID=$(id -u) HOST_GID=$(id -g) docker compose exec app vendor/bin/phpstan a
 # Dependency vulnerability audit
 make composer audit
 ```
-
-Theo `phpunit.xml`, test suite dùng SQLite in-memory (`DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`), không dùng MySQL local. PHP image có extension `sqlite3`. CI hiện chạy Pint, PHPStan, Composer audit, PHPUnit, frontend build và Docker image build/scan.
-
-## Dữ liệu Docker
-
-Compose dùng named volumes:
-
-| Volume | Dữ liệu |
-| --- | --- |
-| `finsafe_db_data` | MySQL files tại `/var/lib/mysql` |
-| `finsafe_node_modules` | npm dependencies của Node service |
-
-`make down` không xóa volumes. Không dùng `docker compose down -v` trừ khi thực sự muốn xóa database local và Node dependencies. Kiểm tra volumes:
-
-```bash
-docker volume ls | grep '^finsafe_'
-```
-
-## Xử lý lỗi thường gặp
-
-### Host port đã được sử dụng
-
-```bash
-ss -ltn '( sport = :8080 or sport = :8081 or sport = :5175 )'
-docker ps --format 'table {{.Names}}\t{{.Ports}}'
-```
-
-Dừng service xung đột nếu phù hợp, hoặc đổi host mapping trong `compose.yaml`. Nếu đổi port Vite, đồng bộ `hmr.clientPort` trong `vite.config.js`.
-
-### Laravel không kết nối MySQL
-
-```bash
-make ps
-docker inspect --format '{{.State.Health.Status}}' finsafe_db
-docker compose logs --tail=100 db app
-```
-
-DB phải `healthy`; `.env` phải dùng `DB_HOST=db` và `DB_PORT=3306`. Sau đổi `.env`, chạy `make artisan optimize:clear`.
-
-### Vite/HMR hoặc dependency Node lỗi
-
-```bash
-docker compose logs --tail=100 node
-```
-
-Node tự chạy `npm ci` khi lockfile đổi. Nếu volume Node hỏng, chỉ reset Node volume (không đụng database):
-
-```bash
-docker compose stop node
-docker compose rm -f node
-docker volume rm finsafe_node_modules
-docker compose up -d node
-```
-
-### Sửa Dockerfile nhưng không thấy thay đổi
-
-```bash
-make rebuild
-docker compose logs --tail=100 app
-```
-
-### Lỗi quyền ghi `storage`/`bootstrap/cache` trên Linux/WSL
-
-Dùng Makefile hoặc prefix Compose với `HOST_UID=$(id -u) HOST_GID=$(id -g)`. Service `app` dùng UID/GID host để tránh file bind mount thuộc root.
-
