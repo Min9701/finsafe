@@ -5,7 +5,7 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 md:pt-[20px]">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <div class="flex items-center">
                         <div class="rounded-lg bg-indigo-100 p-3">
                             <svg class="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/></svg>
@@ -16,7 +16,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <div class="flex items-center">
                         <div class="rounded-lg bg-green-100 p-3">
                             <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"/></svg>
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <div class="flex items-center">
                         <div class="rounded-lg bg-red-100 p-3">
                             <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 13l-5 5m0 0l-5-5m5 5V6"/></svg>
@@ -40,11 +40,11 @@
                 </div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Chi tiêu theo tháng</h3>
                     <canvas id="monthlyChart" height="200"></canvas>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <h3 class="text-lg font-semibold text-gray-800 mb-4">Chi tiêu theo danh mục (tháng này)</h3>
                     @if($categoryExpenses->count() > 0)
                         <canvas id="categoryChart" height="200"></canvas>

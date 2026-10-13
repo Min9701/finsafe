@@ -86,9 +86,13 @@ jobs:
           exit-code: '1'
 
   trivy-image:
-    name: Trivy image scan
+    name: Trivy image scan (${{ matrix.dockerfile }})
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        dockerfile: [Dockerfile, Dockerfile.prod]
     steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -96,7 +100,7 @@ jobs:
           persist-credentials: false
 
       - name: Build Docker image
-        run: docker build -t finsafe-app:${{ github.sha }} .
+        run: docker build -f ${{ matrix.dockerfile }} -t finsafe-app:${{ github.sha }} .
 
       - name: Scan image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0

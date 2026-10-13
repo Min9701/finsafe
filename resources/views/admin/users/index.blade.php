@@ -7,7 +7,7 @@
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">{{ session('success') }}</div>
             @endif
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap gap-4 items-end">
                     <div class="flex-1 min-w-[200px]">
                         <x-input-label for="search" value="Tìm kiếm" />
@@ -15,7 +15,7 @@
                     </div>
                     <div>
                         <x-input-label for="status" value="Trạng thái" />
-                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select id="status" name="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">Tất cả</option>
                             <option value="ACTIVE" {{ request('status')==='ACTIVE'?'selected':'' }}>Hoạt động</option>
                             <option value="INACTIVE" {{ request('status')==='INACTIVE'?'selected':'' }}>Vô hiệu hóa</option>
@@ -27,7 +27,7 @@
                     </div>
                 </form>
             </div>
-            <div class="bg-white shadow-sm sm:rounded-lg">
+            <div class="bg-white shadow-xs sm:rounded-lg">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">

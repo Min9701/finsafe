@@ -1,5 +1,5 @@
 {{-- Giao dịch gần đây --}}
-<div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+<div class="bg-white overflow-hidden shadow-xs sm:rounded-lg">
     <div class="p-6">
         <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Giao dịch gần đây</h3>

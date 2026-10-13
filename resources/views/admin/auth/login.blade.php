@@ -43,7 +43,7 @@
                             required
                             autofocus
                             autocomplete="username"
-                            class="block w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            class="block w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-hidden transition placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                             placeholder="admin@gmail.com"
                         >
 
@@ -63,7 +63,7 @@
                             type="password"
                             required
                             autocomplete="current-password"
-                            class="block w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                            class="block w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-hidden transition placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                             placeholder="••••••••"
                         >
 
@@ -76,7 +76,7 @@
                         <input
                             type="checkbox"
                             name="remember"
-                            class="rounded border-slate-700 bg-slate-800 text-indigo-500"
+                            class="rounded-sm border-slate-700 bg-slate-800 text-indigo-500"
                         >
 
                         Remember me
@@ -84,7 +84,7 @@
 
                     <button
                         type="submit"
-                        class="w-full rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                        class="w-full rounded-xl bg-indigo-600 px-4 py-3 font-semibold text-white transition hover:bg-indigo-500 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
                     >
                         Sign in to Admin
                     </button>

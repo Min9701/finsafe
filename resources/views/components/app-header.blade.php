@@ -1,4 +1,4 @@
-<header class="fixed inset-x-0 top-0 z-40 w-full border-b border-stone-200 bg-white/95 backdrop-blur">
+<header class="fixed inset-x-0 top-0 z-40 w-full border-b border-stone-200 bg-white/95 backdrop-blur-sm">
     <div class="flex h-[50px] w-full items-center justify-between px-5 sm:px-8 lg:px-10">
         {{-- Logo + Navigation --}}
         <div class="flex min-w-0 items-center gap-4 sm:gap-8">
@@ -75,7 +75,7 @@
             @if (Auth::user()->role !== 'ADMIN')
                 <a
                     href="{{ route('transactions.create') }}"
-                    class="hidden rounded-lg bg-slate-800 px-3.5 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-slate-700 sm:inline-flex"
+                    class="hidden rounded-lg bg-slate-800 px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition hover:bg-slate-700 sm:inline-flex"
                 >
                     + Thêm giao dịch
                 </a>
@@ -84,7 +84,7 @@
             <x-dropdown align="right" width="48">
                 <x-slot name="trigger">
                     <button
-                        class="flex items-center gap-2 rounded-lg p-1.5 text-left transition focus:outline-none"
+                        class="flex items-center gap-2 rounded-lg p-1.5 text-left transition focus:outline-hidden"
                     >
                         <span class="flex items-center justify-center text-xs font-bold text-slate-700">
                             {{ Auth::user()->name }}
