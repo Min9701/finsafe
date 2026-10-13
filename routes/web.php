@@ -29,7 +29,7 @@ Route::middleware(['auth', 'totp.activated'])->group(function () {
     Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
 });
 
-Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'totp.activated', 'role:ADMIN'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // User management

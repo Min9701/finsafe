@@ -27,8 +27,15 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        $request->session()->forget('auth.mfa_verified_user_id');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        if ($user->totp_secret === null || $user->totp_verified_at === null) {
+            return redirect()->route('totp.activation.show');
+        }
+
+        return redirect()->route('totp.challenge.show');
     }
 
     /**

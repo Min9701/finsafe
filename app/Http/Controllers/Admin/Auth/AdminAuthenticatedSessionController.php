@@ -15,6 +15,9 @@ class AdminAuthenticatedSessionController extends Controller
         return view('admin.auth.login');
     }
 
+    /**
+     * Handle an incoming admin authentication request.
+     */
     public function store(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
@@ -39,10 +42,20 @@ class AdminAuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
+        $request->session()->forget('auth.mfa_verified_user_id');
 
-        return redirect()->intended('/admin/dashboard');
+        $user = Auth::user();
+
+        if ($user->totp_secret === null || $user->totp_verified_at === null) {
+            return redirect()->route('totp.activation.show');
+        }
+
+        return redirect()->route('totp.challenge.show');
     }
 
+    /**
+     * Destroy an authenticated admin session.
+     */
     public function destroy(Request $request): RedirectResponse
     {
         Auth::logout();

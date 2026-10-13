@@ -17,8 +17,16 @@ class EnsureTotpIsActivated
     {
         $user = $request->user();
 
-        if ($user?->role !== 'ADMIN' && $user?->totp_verified_at === null) {
+        if (! $user) {
+            return $next($request);
+        }
+
+        if ($user->totp_secret === null || $user->totp_verified_at === null) {
             return redirect()->route('totp.activation.show');
+        }
+
+        if ($request->session()->get('auth.mfa_verified_user_id') !== $user->id) {
+            return redirect()->route('totp.challenge.show');
         }
 
         return $next($request);

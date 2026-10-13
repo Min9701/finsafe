@@ -17,12 +17,19 @@ use PragmaRX\Google2FA\Google2FA;
 
 class TotpActivationController extends Controller
 {
+    /**
+     * Display the TOTP activation setup view with QR code and secret key.
+     */
     public function show(Request $request, Google2FA $google2fa): RedirectResponse|View
     {
         $user = $request->user();
 
         if ($user->totp_verified_at !== null) {
-            return redirect()->route('dashboard');
+            if ($request->session()->get('auth.mfa_verified_user_id') === $user->id) {
+                return redirect()->route($user->isAdmin() ? 'admin.dashboard' : 'dashboard');
+            }
+
+            return redirect()->route('totp.challenge.show');
         }
 
         if ($user->totp_secret === null) {
@@ -39,13 +46,22 @@ class TotpActivationController extends Controller
         ]);
     }
 
+    /**
+     * Verify initial TOTP code, mark account as activated, and establish MFA session.
+     *
+     *
+     * @throws ValidationException
+     */
     public function store(ConfirmTotpActivationRequest $request, Google2FA $google2fa): RedirectResponse
     {
         $user = $request->user();
         $key = 'totp-activation:'.$user->id.'|'.$request->ip();
 
         if (RateLimiter::tooManyAttempts($key, 5)) {
-            throw ValidationException::withMessages(['code' => 'Vui lòng thử lại sau '.RateLimiter::availableIn($key).' giây.']);
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages([
+                'code' => "Vui lòng thử lại sau {$seconds} giây.",
+            ]);
         }
 
         if ($user->totp_secret === null || ! $google2fa->verifyKey($user->totp_secret, $request->validated('code'))) {
@@ -55,7 +71,10 @@ class TotpActivationController extends Controller
 
         RateLimiter::clear($key);
         $user->forceFill(['totp_verified_at' => now()])->save();
+        $request->session()->put('auth.mfa_verified_user_id', $user->id);
 
-        return redirect()->route('dashboard')->with('success', 'Google Authenticator đã được kích hoạt.');
+        $default = $user->isAdmin() ? route('admin.dashboard') : route('dashboard');
+
+        return redirect()->intended($default)->with('success', 'Google Authenticator đã được kích hoạt.');
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\PasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\TotpActivationController;
+use App\Http\Controllers\Auth\TotpChallengeController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->group(function () {
@@ -57,13 +58,21 @@ Route::middleware('auth')->group(function () {
         ->middleware('throttle:5,1')
         ->name('totp.activation.store');
 
-    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
-        ->name('password.confirm');
+    Route::get('verify-authenticator', [TotpChallengeController::class, 'show'])
+        ->name('totp.challenge.show');
 
-    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
-
-    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    Route::post('verify-authenticator', [TotpChallengeController::class, 'store'])
+        ->name('totp.challenge.store');
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
+
+    Route::middleware('totp.activated')->group(function () {
+        Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
+            ->name('password.confirm');
+
+        Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
+
+        Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+    });
 });

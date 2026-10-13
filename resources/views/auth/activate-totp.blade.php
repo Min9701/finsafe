@@ -23,7 +23,7 @@
         <x-primary-button class="w-full justify-center">Xác nhận và tiếp tục</x-primary-button>
     </form>
 
-    <form method="POST" action="{{ route('logout') }}" class="mt-4 text-center">
+    <form method="POST" action="{{ auth()->user()?->isAdmin() ? route('admin.logout') : route('logout') }}" class="mt-4 text-center">
         @csrf
         <button type="submit" class="text-sm text-gray-600 underline">Đăng xuất</button>
     </form>
