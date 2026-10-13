@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Budget;
 use App\Models\Category;
 use App\Repositories\Interfaces\BudgetRepositoryInterface;
+use App\Repositories\Interfaces\CategoryRepositoryInterface;
 use App\Services\Interfaces\BudgetServiceInterface;
 use Illuminate\Database\QueryException;
 use Illuminate\Support\Collection;
@@ -14,6 +15,7 @@ class BudgetService implements BudgetServiceInterface
 {
     public function __construct(
         private readonly BudgetRepositoryInterface $budgetRepository,
+        private readonly CategoryRepositoryInterface $categoryRepository,
     ) {}
 
     public function getBudgetsForCurrentMonth(int $userId): Collection
@@ -21,26 +23,20 @@ class BudgetService implements BudgetServiceInterface
         return $this->budgetRepository->getForMonth($userId, now()->month, now()->year);
     }
 
+    /**
+     * Lấy danh mục chi tiêu toàn cục hoặc thuộc người dùng.
+     *
+     * @return Collection<int, Category>
+     */
     public function getAvailableExpenseCategories(int $userId): Collection
     {
-        return Category::query()
-            ->where('type', 'expense')
-            ->where(function ($query) use ($userId) {
-                $query->whereNull('user_id')->orWhere('user_id', $userId);
-            })
-            ->orderBy('name')
-            ->get();
+        return $this->categoryRepository->getAvailableExpenseCategoriesForUser($userId);
     }
 
     public function createBudget(int $userId, array $data): Budget
     {
-        $categoryExists = Category::query()
-            ->whereKey($data['category_id'])
-            ->where('type', 'expense')
-            ->where(function ($query) use ($userId) {
-                $query->whereNull('user_id')->orWhere('user_id', $userId);
-            })
-            ->exists();
+        $categoryExists = $this->categoryRepository
+            ->existsAvailableExpenseCategoryForUser($data['category_id'], $userId);
 
         if (! $categoryExists) {
             throw ValidationException::withMessages(['category_id' => 'Danh mục không hợp lệ.']);

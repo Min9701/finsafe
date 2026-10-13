@@ -14,6 +14,11 @@ class BudgetController extends Controller
         private readonly BudgetServiceInterface $budgetService,
     ) {}
 
+    /**
+     * Summary of index
+     *
+     * @return \Illuminate\Contracts\View\View
+     */
     public function index(Request $request): View
     {
         $userId = $request->user()->id;
@@ -25,6 +30,9 @@ class BudgetController extends Controller
         ]);
     }
 
+    /**
+     * Summary of store
+     */
     public function store(StoreBudgetRequest $request): RedirectResponse
     {
         $this->budgetService->createBudget($request->user()->id, $request->validated());

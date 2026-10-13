@@ -30,7 +30,7 @@ class TotpActivationController extends Controller
         }
 
         $qrCodeUrl = $google2fa->getQRCodeUrl(config('app.name'), $user->email, $user->totp_secret);
-        $qrCode = (new Writer(new ImageRenderer(new RendererStyle(220, 4), new SvgImageBackEnd())))
+        $qrCode = (new Writer(new ImageRenderer(new RendererStyle(220, 4), new SvgImageBackEnd)))
             ->writeString($qrCodeUrl);
 
         return view('auth.activate-totp', [
