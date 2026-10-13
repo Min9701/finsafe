@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Budget extends Model
 {
@@ -26,12 +27,22 @@ class Budget extends Model
         ];
     }
 
-    public function user()
+    /**
+     * Lấy người dùng sở hữu ngân sách.
+     *
+     * @return BelongsTo<User, $this>
+     */
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function category()
+    /**
+     * Lấy danh mục áp dụng ngân sách.
+     *
+     * @return BelongsTo<Category, $this>
+     */
+    public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\CheckUserStatus;
+use App\Http\Middleware\EnsureTotpIsActivated;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,6 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'check.status' => CheckUserStatus::class,
+            'totp.activated' => EnsureTotpIsActivated::class,
+        ]);
+
+        $middleware->appendToGroup('web', [
+            CheckUserStatus::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
