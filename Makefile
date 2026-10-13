@@ -1,10 +1,10 @@
-COMPOSE := HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) docker compose
+COMPOSE := HOST_UID=$(shell id -u) HOST_GID=$(shell id -g) docker compose -f compose.yaml -f docker/compose.healthcheck.yaml
 
 .PHONY: init up down restart rebuild logs ps artisan composer npm migrate
 
 init:
 	@test -f .env || cp .env.example .env
-	$(COMPOSE) up -d --build
+	$(COMPOSE) up -d --build --wait --wait-timeout 600
 	$(COMPOSE) exec --user root app sh -c 'mkdir -p storage/framework/cache storage/framework/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs bootstrap/cache && chown -R $(shell id -u):$(shell id -g) storage bootstrap/cache'
 	@if ! grep -Eq '^APP_KEY=.+' .env; then $(COMPOSE) exec app php artisan key:generate --force; fi
 	$(COMPOSE) exec app php artisan migrate --force

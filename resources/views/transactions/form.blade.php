@@ -1,6 +1,6 @@
 <div>
     <x-input-label for="type" value="Loại giao dịch" />
-    <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+    <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500" required>
         <option value="">-- Chọn loại --</option>
         <option value="income" {{ old('type', $transaction->type ?? '') === 'income' ? 'selected' : '' }}>Thu nhập</option>
         <option value="expense" {{ old('type', $transaction->type ?? '') === 'expense' ? 'selected' : '' }}>Chi tiêu</option>
@@ -10,7 +10,7 @@
 
 <div>
     <x-input-label for="category_id" value="Danh mục" />
-    <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+    <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500" required>
         <option value="">-- Chọn danh mục --</option>
         @foreach($categories as $category)
             <option value="{{ $category->id }}" data-type="{{ $category->type }}" {{ old('category_id', $transaction->category_id ?? '') == $category->id ? 'selected' : '' }}>
@@ -35,7 +35,7 @@
 
 <div>
     <x-input-label for="description" value="Mô tả" />
-    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Nhập mô tả...">{{ old('description', $transaction->description ?? '') }}</textarea>
+    <textarea id="description" name="description" rows="3" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500" placeholder="Nhập mô tả...">{{ old('description', $transaction->description ?? '') }}</textarea>
     <x-input-error :messages="$errors->get('description')" class="mt-2" />
 </div>
 

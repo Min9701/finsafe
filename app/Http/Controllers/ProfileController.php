@@ -13,8 +13,6 @@ class ProfileController extends Controller
 {
     /**
      * Summary of edit
-     *
-     * @return \Illuminate\Contracts\View\View
      */
     public function edit(Request $request): View
     {

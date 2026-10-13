@@ -10,7 +10,7 @@
             @if(session('success'))
                 <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">{{ session('success') }}</div>
             @endif
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <form method="GET" action="{{ route('transactions.index') }}">
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div>
@@ -19,7 +19,7 @@
                         </div>
                         <div>
                             <x-input-label for="type" value="Loại" />
-                            <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select id="type" name="type" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Tất cả</option>
                                 <option value="income" {{ request('type')==='income'?'selected':'' }}>Thu nhập</option>
                                 <option value="expense" {{ request('type')==='expense'?'selected':'' }}>Chi tiêu</option>
@@ -27,7 +27,7 @@
                         </div>
                         <div>
                             <x-input-label for="category_id" value="Danh mục" />
-                            <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">Tất cả</option>
                                 @foreach($categories as $cat)
                                     <option value="{{ $cat->id }}" {{ request('category_id')==$cat->id?'selected':'' }}>{{ $cat->name }}</option>

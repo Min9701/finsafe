@@ -27,5 +27,8 @@ RUN chmod +x /usr/local/bin/finsafe-php-entrypoint
 
 WORKDIR /var/www/html
 
+# compose.yaml overrides this with HOST_UID:HOST_GID for local development.
+USER www-data
+
 ENTRYPOINT ["finsafe-php-entrypoint"]
 CMD ["php-fpm"]

@@ -15,14 +15,14 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Tạo ngân sách tháng {{ $currentMonth->format('m/Y') }}</h3>
 
                 <form method="POST" action="{{ route('budgets.store') }}" class="space-y-4 max-w-xl">
                     @csrf
                     <div>
                         <x-input-label for="category_id" value="Danh mục chi tiêu" />
-                        <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select id="category_id" name="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-xs focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">-- Chọn danh mục --</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
@@ -43,7 +43,7 @@
                 </form>
             </div>
 
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Danh sách ngân sách tháng hiện tại</h3>
 
                 @if($budgets->isEmpty())

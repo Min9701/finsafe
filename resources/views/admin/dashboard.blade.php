@@ -5,24 +5,24 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 md:pt-[20px]">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <p class="text-sm font-medium text-gray-500">Tổng người dùng</p>
                     <p class="text-3xl font-bold text-indigo-600 mt-1">{{ $totalUsers }}</p>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <p class="text-sm font-medium text-gray-500">Đang hoạt động</p>
                     <p class="text-3xl font-bold text-green-600 mt-1">{{ $activeUsers }}</p>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <p class="text-sm font-medium text-gray-500">Bị vô hiệu hóa</p>
                     <p class="text-3xl font-bold text-red-600 mt-1">{{ $inactiveUsers }}</p>
                 </div>
-                <div class="bg-white shadow-sm sm:rounded-lg p-6">
+                <div class="bg-white shadow-xs sm:rounded-lg p-6">
                     <p class="text-sm font-medium text-gray-500">Mới trong tháng</p>
                     <p class="text-3xl font-bold text-amber-600 mt-1">{{ $newUsersThisMonth }}</p>
                 </div>
             </div>
-            <div class="bg-white shadow-sm sm:rounded-lg p-6">
+            <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4">Người dùng đăng ký theo tháng</h3>
                 <canvas id="regChart" height="100"></canvas>
             </div>
