@@ -52,6 +52,7 @@ jobs:
 
       - name: Run PHPUnit with coverage
         run: |
+          mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/testing storage/framework/views storage/logs bootstrap/cache
           cp .env.example .env
           php artisan key:generate
           vendor/bin/phpunit --coverage-clover coverage.xml --log-junit phpunit-report.xml
