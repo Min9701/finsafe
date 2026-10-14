@@ -1,0 +1,98 @@
+name: SonarQube
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sonarqube-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  SONARQUBE_IMAGE: sonarqube:26.10.0.133078-community
+  SONAR_HOST_URL: http://localhost:9000
+
+jobs:
+  sonarqube:
+    name: SonarQube Community analysis
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@eb7c497e18156a6bbabfef1d3a82760b9eda3962 # 2.40.0
+        with:
+          php-version: '8.4'
+          extensions: mbstring, bcmath, gd, intl, zip, pdo_sqlite
+          coverage: pcov
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Run PHPUnit with coverage
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          vendor/bin/phpunit --coverage-clover coverage.xml --log-junit phpunit-report.xml
+
+      - name: Start SonarQube Community server
+        run: |
+          sudo sysctl -w vm.max_map_count=262144
+          docker run -d --name sonarqube -p 9000:9000 "$SONARQUBE_IMAGE"
+          for _ in $(seq 1 90); do
+            status=$(curl -s "$SONAR_HOST_URL/api/system/status" | jq -r '.status // empty' || true)
+            if [ "$status" = "UP" ]; then
+              echo "SonarQube is up"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "SonarQube did not start in time"
+          docker logs --tail 100 sonarqube
+          exit 1
+
+      - name: Create analysis token
+        run: |
+          admin_password="Aa1!$(openssl rand -hex 16)"
+          echo "::add-mask::$admin_password"
+          curl -sf -u admin:admin -X POST "$SONAR_HOST_URL/api/users/change_password" \
+            --data-urlencode "login=admin" \
+            --data-urlencode "previousPassword=admin" \
+            --data-urlencode "password=$admin_password"
+          token=$(curl -sf -u "admin:$admin_password" -X POST "$SONAR_HOST_URL/api/user_tokens/generate" \
+            --data-urlencode "name=ci-${{ github.run_id }}" | jq -r '.token')
+          echo "::add-mask::$token"
+          echo "SONAR_TOKEN=$token" >> "$GITHUB_ENV"
+
+      - name: SonarQube scan
+        uses: SonarSource/sonarqube-scan-action@d209202bc7d53ff1cc128f7f907dac145c9d6ae9 # v8.3.0
+        with:
+          args: >
+            -Dsonar.php.coverage.reportPaths=coverage.xml
+            -Dsonar.php.tests.reportPath=phpunit-report.xml
+            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.timeout=300
+
+      - name: Summarize issues
+        if: ${{ !cancelled() }}
+        run: |
+          curl -s -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/issues/search?componentKeys=finsafe&resolved=false&ps=500&facets=severities,types" \
+            | jq -r '"Total issues: \(.total)", (.facets[] | "\(.property): " + ([.values[] | "\(.val)=\(.count)"] | join(", ")))' || true
+
+      - name: Show SonarQube logs on failure
+        if: failure()
+        run: docker logs --tail 100 sonarqube
+
+      - name: Stop SonarQube
+        if: always()
+        run: docker rm -f sonarqube
