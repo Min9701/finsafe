@@ -39,6 +39,17 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --no-progress --prefer-dist
 
+      - name: Setup Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Build frontend assets
+        run: |
+          npm ci
+          npm run build
+
       - name: Run PHPUnit with coverage
         run: |
           cp .env.example .env
@@ -63,13 +74,20 @@ jobs:
 
       - name: Create analysis token
         run: |
+          # Credentials are passed to curl as a config on stdin instead of
+          # command-line flags, so they never appear in the process list.
+          sonar_api() {
+            local login=$1 password=$2
+            shift 2
+            printf 'user = "%s:%s"\n' "$login" "$password" | curl -sf -K - "$@"
+          }
           admin_password="Aa1!$(openssl rand -hex 16)"
           echo "::add-mask::$admin_password"
-          curl -sf -u admin:admin -X POST "$SONAR_HOST_URL/api/users/change_password" \
+          sonar_api admin admin -X POST "$SONAR_HOST_URL/api/users/change_password" \
             --data-urlencode "login=admin" \
             --data-urlencode "previousPassword=admin" \
             --data-urlencode "password=$admin_password"
-          token=$(curl -sf -u "admin:$admin_password" -X POST "$SONAR_HOST_URL/api/user_tokens/generate" \
+          token=$(sonar_api admin "$admin_password" -X POST "$SONAR_HOST_URL/api/user_tokens/generate" \
             --data-urlencode "name=ci-${{ github.run_id }}" | jq -r '.token')
           echo "::add-mask::$token"
           echo "SONAR_TOKEN=$token" >> "$GITHUB_ENV"
@@ -86,13 +104,14 @@ jobs:
       - name: Summarize issues
         if: ${{ !cancelled() }}
         run: |
-          curl -s -u "$SONAR_TOKEN:" "$SONAR_HOST_URL/api/issues/search?componentKeys=finsafe&resolved=false&ps=500&facets=severities,types" \
+          curl -s -H "Authorization: Bearer $SONAR_TOKEN" \
+            "$SONAR_HOST_URL/api/issues/search?componentKeys=finsafe&resolved=false&ps=500&facets=severities,types" \
             | jq -r '"Total issues: \(.total)", (.facets[] | "\(.property): " + ([.values[] | "\(.val)=\(.count)"] | join(", ")))' || true
 
       - name: Show SonarQube logs on failure
         if: failure()
-        run: docker logs --tail 100 sonarqube
+        run: docker logs --tail 100 sonarqube || true
 
       - name: Stop SonarQube
         if: always()
-        run: docker rm -f sonarqube
+        run: docker rm -f sonarqube || true
