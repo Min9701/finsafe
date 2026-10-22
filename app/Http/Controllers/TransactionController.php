@@ -19,14 +19,55 @@ class TransactionController extends Controller
     {
         $user = $request->user();
 
-        $filters = $request->only([
-            'search', 'type', 'category_id',
-            'date_from', 'date_to',
-            'amount_min', 'amount_max',
-        ]);
+        // Lấy tất cả các bộ lọc từ request
+        $search = $request->input('search');
+        $type = $request->input('type');
+        $categoryId = $request->input('category_id');
+        $dateFrom = $request->input('date_from');
+        $dateTo = $request->input('date_to');
+        $amountMin = $request->input('amount_min');
+        $amountMax = $request->input('amount_max');
 
-        $transactions = $this->transactionService->getTransactionsPaginated($user->id, $filters);
-        $categories = $this->transactionService->getCategoriesForUser($user->id);
+        // Bắt đầu query cơ bản theo user_id
+        $query = Transaction::where('user_id', $user->id);
+
+        // 1. Ô tìm kiếm (Vulnerable to SQL Injection vì nối chuỗi thô)
+        if (!empty($search)) {
+                $query->whereRaw("description = '$search'");
+        }
+
+        // 2. Lọc theo loại (Income / Expense) - An toàn
+        if (!empty($type)) {
+            $query->where('type', $type);
+        }
+
+        // 3. Lọc theo danh mục (Có thể tạo lỗ hổng SQLi dạng Numeric nếu muốn test bằng cách nối thẳng biến $categoryId)
+        if (!empty($categoryId)) {
+            $query->whereRaw("category_id = $categoryId");
+        }
+
+        // 4. Lọc theo khoảng ngày
+        if (!empty($dateFrom)) {
+            $query->whereDate('transaction_date', '>=', $dateFrom);
+        }
+        if (!empty($dateTo)) {
+            $query->whereDate('transaction_date', '<=', $dateTo);
+        }
+
+        // 5. Lọc theo khoảng số tiền
+        if (!empty($amountMin)) {
+                // Sử dụng whereRaw và nối trực tiếp biến $amountMin dạng số
+                $query->whereRaw("amount >= $amountMin");
+        }
+        if (!empty($amountMax)) {
+            $query->where('amount', '<=', $amountMax);
+        }
+
+        // Phân trang kết quả và giữ lại query string trên URL
+        $transactions = $query->paginate(10)->withQueryString();
+
+        // Lấy danh mục của user cho form filter trên giao diện
+        $categories = \App\Models\Category::where('user_id', $user->id)->get();
 
         return view('transactions.index', compact('transactions', 'categories'));
     }

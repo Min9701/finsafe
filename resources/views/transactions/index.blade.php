@@ -44,7 +44,7 @@
                         </div>
                         <div>
                             <x-input-label for="amount_min" value="Số tiền từ" />
-                            <x-text-input id="amount_min" name="amount_min" type="number" class="mt-1 block w-full" :value="request('amount_min')" />
+                            <x-text-input id="amount_min" name="amount_min" type="text" class="mt-1 block w-full" :value="request('amount_min')" />
                         </div>
                         <div>
                             <x-input-label for="amount_max" value="Số tiền đến" />
