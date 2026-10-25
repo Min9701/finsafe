@@ -86,7 +86,7 @@
                     <button
                         class="flex items-center gap-2 rounded-lg p-1.5 text-left transition focus:outline-hidden"
                     >
-                        <span class="flex items-center justify-center text-xs font-bold text-slate-700">
+                        <span class="items-center justify-center text-xs font-bold text-slate-700 hidden md:flex">
                             {{ Auth::user()->name }}
                         </span>
                         <span class="flex h-8 w-8 items-center justify-center rounded-full bg-stone-200 text-xs font-bold text-slate-700">

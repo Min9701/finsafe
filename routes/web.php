@@ -11,22 +11,24 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'totp.activated'])->group(function () {
     Route::get('/', DashboardController::class)->name('dashboard');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
+    Route::middleware(['role:USER'])->group(function () {
+        Route::get('/profile', [ProfileController::class, 'edit'])
+            ->name('profile.edit');
 
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
+        Route::patch('/profile', [ProfileController::class, 'update'])
+            ->name('profile.update');
 
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+        Route::delete('/profile', [ProfileController::class, 'destroy'])
+            ->name('profile.destroy');
 
-    // Transactions CRUD
-    Route::resource('transactions', TransactionController::class)
-        ->except(['show']);
+        // Transactions CRUD
+        Route::resource('transactions', TransactionController::class)
+            ->except(['show']);
 
-    // Budgets
-    Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
-    Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+        // Budgets
+        Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
+        Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
+    });
 });
 
 Route::middleware(['auth', 'role:ADMIN'])->prefix('admin')->name('admin.')->group(function () {
