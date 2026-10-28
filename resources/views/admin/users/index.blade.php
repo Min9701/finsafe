@@ -5,7 +5,22 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6 md:pt-[20px]">
             @if(session('success'))
-                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">{{ session('success') }}</div>
+                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg" id="flash-message-box">
+                    {{-- THU_03: Reflected XSS via JavaScript URL hash / fragment evaluation --}}
+                    <span id="flash-text">{{ session('success') }}</span>
+                </div>
+                <script>
+                    window.addEventListener('DOMContentLoaded', () => {
+                        // Đọc fragment (#success=...) từ URL hash và render trực tiếp bằng innerHTML gây Reflected/Client XSS
+                        if (window.location.hash) {
+                            const hashParams = new URLSearchParams(window.location.hash.substring(1));
+                            const customMsg = hashParams.get('msg');
+                            if (customMsg) {
+                                document.getElementById('flash-text').innerHTML = decodeURIComponent(customMsg);
+                            }
+                        }
+                    });
+                </script>
             @endif
             <div class="bg-white shadow-xs sm:rounded-lg p-6">
                 <form method="GET" action="{{ route('admin.users.index') }}" class="flex flex-wrap gap-4 items-end">
@@ -44,7 +59,18 @@
                             @forelse($users as $user)
                                 <tr>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $user->id }}</td>
-                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $user->name }}</td>
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-950">
+                                        {{-- THU_04: Stored XSS via JSON API response / AJAX template rendering simulation --}}
+                                        <div id="user-name-{{ $user->id }}">{{ $user->name }}</div>
+                                        <script>
+                                            // Mô phỏng client-side template injection / unescaped data binding từ biến JavaScript
+                                            (function() {
+                                                const userNameData = "{!! addslashes($user->name) !!}";
+                                                // Nếu tên chứa mã độc HTML/JS, khi gán qua innerHTML sẽ thực thi
+                                                // document.getElementById('user-name-{{ $user->id }}').innerHTML = userNameData;
+                                            })();
+                                        </script>
+                                    </td>
                                     <td class="px-6 py-4 text-sm text-gray-500">{{ $user->email }}</td>
                                     <td class="px-6 py-4">
                                         <span class="px-2.5 py-0.5 rounded-full text-xs font-medium {{ $user->status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">

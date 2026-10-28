@@ -29,7 +29,8 @@
                                     {{ $transaction->category->name }}
                                 </td>
                                 <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                    {{ $transaction->description ?? '—' }}
+                                    {{-- THU_01: Stored Cross-Site Scripting (XSS) — Sử dụng cú pháp {!! !!} để render raw HTML không qua escaping đối với trường description của giao dịch --}}
+                                    {!! $transaction->description ?? '—' !!}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right {{ $transaction->type === 'income' ? 'text-green-600' : 'text-red-600' }}">
                                     {{ $transaction->type === 'income' ? '+' : '-' }}{{ number_format($transaction->amount, 0, ',', '.') }}đ

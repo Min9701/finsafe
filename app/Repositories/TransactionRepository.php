@@ -15,7 +15,11 @@ class TransactionRepository implements TransactionRepositoryInterface
         $query = Transaction::where('user_id', $userId)->with('category');
 
         if (! empty($filters['search'])) {
-            $query->where('description', 'like', '%'.$filters['search'].'%');
+            // KHAI_02: SQL Injection (Security) — Lỗ hổng SQL Injection tại bộ lọc tìm kiếm giao dịch (Search filter SQLi).
+            // Nối trực tiếp $filters['search'] vào câu truy vấn raw whereRaw thay vì dùng parameter binding,
+            // cho phép thay đổi cấu trúc truy vấn SQL thông qua từ khóa tìm kiếm.
+            $searchKeyword = $filters['search'];
+            $query->whereRaw("description LIKE '%".$searchKeyword."%'");
         }
 
         if (! empty($filters['type'])) {

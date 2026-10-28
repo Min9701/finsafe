@@ -15,15 +15,19 @@ class UserRepository implements UserRepositoryInterface
         $query = User::where('role', 'USER');
 
         if (! empty($filters['search'])) {
+            // KHAI_03: SQL Injection (Security) — Lỗ hổng SQL Injection tại bộ lọc tìm kiếm quản lý người dùng (Admin User search filter SQLi).
+            // Nối trực tiếp $filters['search'] vào câu truy vấn raw whereRaw thay vì dùng parameter binding,
+            // cho phép thay đổi cấu trúc truy vấn SQL thông qua từ khóa tìm kiếm trên giao diện quản trị.
             $search = $filters['search'];
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', '%'.$search.'%')
-                    ->orWhere('email', 'like', '%'.$search.'%');
-            });
+            $query->whereRaw("(name LIKE '%".$search."%' OR email LIKE '%".$search."%')");
         }
 
         if (! empty($filters['status'])) {
-            $query->where('status', $filters['status']);
+            // KHAI_04: SQL Injection (Security) — Lỗ hổng SQL Injection tại bộ lọc trạng thái người dùng (Admin User status filter SQLi).
+            // Nối trực tiếp $filters['status'] vào câu truy vấn raw whereRaw thay vì dùng parameter binding,
+            // cho phép thay đổi cấu trúc truy vấn SQL thông qua bộ lọc status trên giao diện quản trị.
+            $status = $filters['status'];
+            $query->whereRaw("status = '".$status."'");
         }
 
         return $query->orderByDesc('created_at')

@@ -21,7 +21,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $t->category->name }}</td>
-                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{{ $t->description ?? '—' }}</td>
+                        <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                            {{-- THU_02: Blind Stored XSS / User-Agent or Header based stored vector or raw rendering of transaction notes --}}
+                            <div x-data="{ rawNote: '{{ addslashes($t->description ?? '—') }}' }" x-html="rawNote"></div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right {{ $t->type === 'income' ? 'text-green-600' : 'text-red-600' }}">
                             {{ $t->type === 'income' ? '+' : '-' }}{{ number_format($t->amount, 0, ',', '.') }}đ
                         </td>

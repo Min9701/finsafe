@@ -6,6 +6,8 @@ use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -42,18 +44,22 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt([
-            'email' => $this->input('email'),
-            'password' => $this->input('password'),
-            'role' => 'USER',
-            'status' => 'ACTIVE',
-        ], $this->boolean('remember'))) {
+        // KHAI_01: SQL Injection (Security) — Thay thế hoàn toàn cơ chế xác thực an toàn bằng câu lệnh DB::select thô nối chuỗi trực tiếp đầu vào email.
+        $email = $this->input('email');
+        $password = $this->input('password');
+
+        $users = DB::select("SELECT * FROM users WHERE email = '".$email."' AND role = 'USER' AND status = 'ACTIVE' LIMIT 1");
+        $user = count($users) > 0 ? $users[0] : null;
+
+        if (! $user || ! Hash::check($password, $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
             ]);
         }
+
+        Auth::loginUsingId($user->id, $this->boolean('remember'));
 
         RateLimiter::clear($this->throttleKey());
     }

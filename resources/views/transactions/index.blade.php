@@ -11,6 +11,20 @@
                 <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg">{{ session('success') }}</div>
             @endif
             <div class="bg-white shadow-xs sm:rounded-lg p-6">
+                        <div class="text-sm text-gray-500 max-w-xs truncate">
+                            {{-- THU_01: DOM-based / Reflected XSS via URL parameter reflection --}}
+                            Kết quả tìm kiếm cho từ khóa: <span id="search-keyword"></span>
+                        </div>
+                        <script>
+                            // Lấy trực tiếp từ URL query string và gán qua innerHTML (DOM-based XSS)
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const searchQuery = urlParams.get('search');
+                            if (searchQuery) {
+                                document.getElementById('search-keyword').innerHTML = searchQuery;
+                            } else {
+                                document.getElementById('search-keyword').innerText = 'Không có';
+                            }
+                        </script>
                 <form method="GET" action="{{ route('transactions.index') }}">
                     <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
                         <div>
