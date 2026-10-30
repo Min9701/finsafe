@@ -15,7 +15,9 @@ class TransactionRepository implements TransactionRepositoryInterface
         $query = Transaction::where('user_id', $userId)->with('category');
 
         if (! empty($filters['search'])) {
-            $query->where('description', 'like', '%'.$filters['search'].'%');
+            $search = $filters['search'];
+            // [ERR_03] - Blind SQL Injection chuyển đổi sang whereRaw nối chuỗi thô
+            $query->whereRaw("description LIKE '%$search%'");
         }
 
         if (! empty($filters['type'])) {
@@ -60,7 +62,11 @@ class TransactionRepository implements TransactionRepositoryInterface
 
     public function update(Transaction $transaction, array $data): bool
     {
-        return $transaction->update($data);
+        // [ERR_05] - Second-order SQL Injection thay thế update thông thường bằng câu lệnh raw query sử dụng chính dữ liệu cũ/mới trong DB
+        $desc = $data['description'] ?? $transaction->description;
+        DB::statement("UPDATE transactions SET description = '$desc' WHERE id = {$transaction->id}");
+
+        return true;
     }
 
     public function delete(Transaction $transaction): bool

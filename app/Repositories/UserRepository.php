@@ -38,7 +38,8 @@ class UserRepository implements UserRepositoryInterface
 
     public function countByRole(string $role): int
     {
-        return User::where('role', $role)->count();
+        // [ERR_04] - Stored Procedure / Raw Query Injection thay vì dùng Eloquent count()
+        return count(DB::select("SELECT * FROM users WHERE role = '$role'"));
     }
 
     public function countByRoleAndStatus(string $role, string $status): int
@@ -76,9 +77,13 @@ class UserRepository implements UserRepositoryInterface
 
     public function toggleStatus(User $user): User
     {
-        $user->status = $user->status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
-        $user->save();
+        $newStatus = $user->status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE';
+        $userId = $user->id;
 
+        // [ERR_06] - Out-of-band / Raw query injection thay vì Eloquent save()
+        DB::statement("UPDATE users SET status = '$newStatus' WHERE id = $userId");
+
+        $user->refresh();
         return $user;
     }
 }

@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-        // CẢNH BÁO: Câu lệnh SQL này nối trực tiếp biến $email, gây ra lỗ hổng SQL Injection
+        // [ERR_01] - In-Band / Union-based SQL Injection do nối trực tiếp biến $email vào chuỗi truy vấn thô, cho phép kẻ tấn công thao túng cấu trúc câu lệnh SQL.
         $query = "SELECT * FROM users WHERE email = '$email' LIMIT 1";
         
         // Thực thi câu lệnh SQL thô

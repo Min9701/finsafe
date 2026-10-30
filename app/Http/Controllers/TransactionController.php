@@ -33,6 +33,7 @@ class TransactionController extends Controller
 
         // 1. Ô tìm kiếm (Vulnerable to SQL Injection vì nối chuỗi thô)
         if (!empty($search)) {
+                // [ERR_02] - In-Band SQL Injection do nối trực tiếp biến $search vào chuỗi SQL bên trong whereRaw
                 $query->whereRaw("description = '$search'");
         }
 
@@ -41,9 +42,9 @@ class TransactionController extends Controller
             $query->where('type', $type);
         }
 
-        // 3. Lọc theo danh mục (Có thể tạo lỗ hổng SQLi dạng Numeric nếu muốn test bằng cách nối thẳng biến $categoryId)
+        // 3. Lọc theo danh mục
         if (!empty($categoryId)) {
-            $query->whereRaw("category_id = $categoryId");
+            $query->where('category_id', $categoryId);
         }
 
         // 4. Lọc theo khoảng ngày
@@ -56,8 +57,7 @@ class TransactionController extends Controller
 
         // 5. Lọc theo khoảng số tiền
         if (!empty($amountMin)) {
-                // Sử dụng whereRaw và nối trực tiếp biến $amountMin dạng số
-                $query->whereRaw("amount >= $amountMin");
+                $query->where('amount', '>=', $amountMin);
         }
         if (!empty($amountMax)) {
             $query->where('amount', '<=', $amountMax);
