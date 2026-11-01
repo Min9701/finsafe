@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\TransactionRequest;
+use App\Models\Category;
 use App\Models\Transaction;
 use App\Services\Interfaces\TransactionServiceInterface;
 use Illuminate\Http\RedirectResponse;
@@ -15,6 +16,12 @@ class TransactionController extends Controller
         private readonly TransactionServiceInterface $transactionService,
     ) {}
 
+    /**
+     * Hiển thị danh sách giao dịch có phân trang và bộ lọc.
+     *
+     * @param  Request  $request  Request HTTP chứa các tham số lọc
+     * @return View Giao diện danh sách giao dịch
+     */
     public function index(Request $request): View
     {
         $user = $request->user();
@@ -33,8 +40,8 @@ class TransactionController extends Controller
 
         // 1. Ô tìm kiếm (Vulnerable to SQL Injection vì nối chuỗi thô)
         if (!empty($search)) {
-                // [ERR_02] - In-Band SQL Injection do nối trực tiếp biến $search vào chuỗi SQL bên trong whereRaw
-                $query->whereRaw("description = '$search'");
+            // [ERR_02] - In-Band SQL Injection do nối trực tiếp biến $search vào chuỗi SQL bên trong whereRaw
+            $query->whereRaw("description = '$search'");
         }
 
         // 2. Lọc theo loại (Income / Expense) - An toàn
@@ -57,17 +64,19 @@ class TransactionController extends Controller
 
         // 5. Lọc theo khoảng số tiền
         if (!empty($amountMin)) {
-                $query->where('amount', '>=', $amountMin);
+            $query->where('amount', '>=', $amountMin);
         }
         if (!empty($amountMax)) {
             $query->where('amount', '<=', $amountMax);
         }
 
-        // Phân trang kết quả và giữ lại query string trên URL
-        $transactions = $query->paginate(10)->withQueryString();
+        // Sắp xếp theo created_at giảm dần, phân trang kết quả và giữ lại query string trên URL
+        $transactions = $query->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         // Lấy danh mục của user cho form filter trên giao diện
-        $categories = \App\Models\Category::where('user_id', $user->id)->get();
+        $categories = Category::where('user_id', $user->id)->get();
 
         return view('transactions.index', compact('transactions', 'categories'));
     }
