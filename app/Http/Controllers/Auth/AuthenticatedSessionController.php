@@ -29,7 +29,7 @@ class AuthenticatedSessionController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-        // [DEMO LỖ HỔNG SQL INJECTION] 
+        // [ERR_01] 
         // Câu lệnh SQL thô có cả điều kiện kiểm tra email và password
         $query = "SELECT * FROM users WHERE email = '$email' AND password = '$password' LIMIT 1";
         
