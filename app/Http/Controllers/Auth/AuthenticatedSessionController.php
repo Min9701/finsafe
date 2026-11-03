@@ -29,19 +29,18 @@ class AuthenticatedSessionController extends Controller
         $email = $request->input('email');
         $password = $request->input('password');
 
-        // [ERR_01] - In-Band / Union-based SQL Injection do nối trực tiếp biến $email vào chuỗi truy vấn thô, cho phép kẻ tấn công thao túng cấu trúc câu lệnh SQL.
-        $query = "SELECT * FROM users WHERE email = '$email' LIMIT 1";
+        // [DEMO LỖ HỔNG SQL INJECTION] 
+        // Câu lệnh SQL thô có cả điều kiện kiểm tra email và password
+        $query = "SELECT * FROM users WHERE email = '$email' AND password = '$password' LIMIT 1";
         
         // Thực thi câu lệnh SQL thô
         $users = DB::select($query);
 
-        // Nếu tìm thấy user từ kết quả SQL Injection
+        // Nếu tìm thấy user (hoặc do đúng thông tin, hoặc do payload đã vô hiệu hóa phần check password)
         if (!empty($users)) {
             $user = User::find($users[0]->id);
             
-            // Đăng nhập trực tiếp vào hệ thống bỏ qua kiểm tra password (hoặc bạn có thể tự check password nếu muốn)
             Auth::login($user);
-
             $request->session()->regenerate();
 
             return redirect()->intended(route('dashboard', absolute: false));
