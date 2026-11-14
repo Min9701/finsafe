@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efd1755efedefca395900e097a47a5ca",
+    "content-hash": "558175937c46d733643997d402e0fb90",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -9157,6 +9157,95 @@
                 }
             ],
             "time": "2025-02-07T05:00:38+00:00"
+        },
+        {
+            "name": "siberfx/laravel-risk-analyzer",
+            "version": "v2.7.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/siberfx/laravel-risk-analyzer.git",
+                "reference": "5df710452969d950b962b779a239b5bfc0012961"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/siberfx/laravel-risk-analyzer/zipball/5df710452969d950b962b779a239b5bfc0012961",
+                "reference": "5df710452969d950b962b779a239b5bfc0012961",
+                "shasum": ""
+            },
+            "require": {
+                "composer/semver": "^3.4",
+                "guzzlehttp/guzzle": "^7.9|^8.0",
+                "illuminate/config": "^12.0|^13.0",
+                "illuminate/console": "^12.0|^13.0",
+                "illuminate/container": "^12.0|^13.0",
+                "illuminate/contracts": "^12.0|^13.0",
+                "illuminate/http": "^12.0|^13.0",
+                "illuminate/routing": "^12.0|^13.0",
+                "illuminate/support": "^12.0|^13.0",
+                "nikic/php-parser": "^5.4",
+                "php": "~8.4.0|~8.5.0",
+                "symfony/process": "^7.2|^8.0"
+            },
+            "require-dev": {
+                "larastan/larastan": "^3.0",
+                "laravel/pint": "^1.20",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^4.0",
+                "pestphp/pest-plugin-laravel": "^4.0"
+            },
+            "bin": [
+                "bin/risk-analyzer"
+            ],
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "aliases": {
+                        "RiskAnalyzer": "Siberfx\\RiskAnalyzer\\Facades\\RiskAnalyzer"
+                    },
+                    "providers": [
+                        "Siberfx\\RiskAnalyzer\\RiskAnalyzerServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Siberfx\\RiskAnalyzer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Selim Görmüş",
+                    "email": "info@siberfx.com",
+                    "homepage": "https://siberfx.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Security scanner for Laravel 12 & 13, and standalone for Symfony, Yii2 and plain PHP: AST taint analysis of your code, React/Vue/Angular frontend, Docker, CI and shell script checks, checks of the booted app's config and routes, OSV dependency advisories, baselines and SARIF output.",
+            "homepage": "https://github.com/siberfx/laravel-risk-analyzer",
+            "keywords": [
+                "SAST",
+                "Siberfx",
+                "laravel",
+                "osv",
+                "php-security",
+                "sarif",
+                "security",
+                "security-audit",
+                "static-analysis",
+                "supply-chain-security",
+                "symfony",
+                "taint-analysis",
+                "yii2"
+            ],
+            "support": {
+                "issues": "https://github.com/siberfx/laravel-risk-analyzer/issues",
+                "source": "https://github.com/siberfx/laravel-risk-analyzer/tree/v2.7.2"
+            },
+            "time": "2026-10-25T17:18:08+00:00"
         },
         {
             "name": "staabm/side-effects-detector",

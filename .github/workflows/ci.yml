@@ -95,6 +95,13 @@ jobs:
         if: ${{ !cancelled() && steps.init.outcome == 'success' }}
         run: $DC exec -T app composer test
 
+      - name: Run Blade XSS Security Scan
+        if: ${{ !cancelled() && steps.init.outcome == 'success' }}
+        run: |
+          $DC exec -T app php artisan risk-analyzer:scan \
+            --only=xss-blade \
+            --fail-on=low
+
       - name: Dump container logs
         if: failure()
         run: $DC logs --no-color --tail=200
